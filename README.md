@@ -1,4 +1,4 @@
-A 3D curtain style animation using Animate.CSS and jQuery. 
+A 3D curtain style animation using Animate.CSS and jQuery. Comes with mousewheel support with debounce.
 
 
 DEMO: [https://github.com/hasinhayder/css3-3d-curtain](https://github.com/hasinhayder/css3-3d-curtain)

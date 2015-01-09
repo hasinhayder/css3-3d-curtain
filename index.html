@@ -97,53 +97,78 @@
     <a class="button" id="up" href="#"> Up </a>
     <a class="button" id="down" href="#"> Down</a>
 </div>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript">
+    /*
+     * jQuery throttle / debounce - v1.1 - 3/7/2010
+     * http://benalman.com/projects/jquery-throttle-debounce-plugin/
+     *
+     * Copyright (c) 2010 "Cowboy" Ben Alman
+     * Dual licensed under the MIT and GPL licenses.
+     * http://benalman.com/about/license/
+     */
+    ;(function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
+
+</script>
 <script type="text/javascript">
     ;(function($){
+        "use strict"
+        var current = 0;
         $(document).ready(function(){
-            var current = 0;
             checkButtonStatus(current);
 
-            $("#up").on("click",function(){
-                currentCurtain = $(".curtains .curtain:eq("+current+")");
-                currentCurtain.addClass("animated zoomOut");
-                current++;
-                nextCurtain = $(".curtains .curtain:eq("+current+")");
-                nextCurtain.css("display","block");
-                nextCurtain.find(".half-left").addClass("fadeInLeft");
-                nextCurtain.find(".half-right").addClass("fadeInRight");
-                nextCurtain.find(".half-left").removeClass("fadeOutLeft");
-                nextCurtain.find(".half-right").removeClass("fadeOutRight");
+            $("#up").on("click",openNextCurtain);
+            $("#down").on("click",openPreviousCurtain);
 
-                checkButtonStatus(current);
-            });
-            $("#down").on("click",function(){
-                currentCurtain = $(".curtains .curtain:eq("+current+")");
-                current--;
-                previousCurtain = $(".curtains .curtain:eq("+current+")");
-                currentCurtain.find(".half-left").removeClass("fadeInLeft");
-                currentCurtain.find(".half-right").removeClass("fadeInRight");
-                currentCurtain.find(".half-left").addClass("fadeOutLeft");
-                currentCurtain.find(".half-right").addClass("fadeOutRight");
-                previousCurtain.removeClass("zoomOut");
-                previousCurtain.addClass("zoomIn");
 
-                checkButtonStatus(current);
-            });
-
-            function  checkButtonStatus(offset){
-                if(offset==0){
-                    $("#down").hide();
-                }else if(offset == ($(".curtains .curtain").length-1)){
-                    $("#up").hide();
+            $("body").on("mousewheel",$.debounce( 200, true, function(e){
+                var scrollDirection = e.originalEvent.wheelDelta || -1 * e.originalEvent.detail;
+                if (scrollDirection<0){
+                    if($("#down").is(":visible")) openPreviousCurtain();
                 }else{
-                    $("#down").show();
-                    $("#up").show();
+                    if($("#up").is(":visible")) openNextCurtain()
                 }
-            }
-
-
+            }));
         });
+
+        function openNextCurtain(){
+            var currentCurtain = $(".curtains .curtain:eq("+current+")");
+            currentCurtain.addClass("animated zoomOut");
+            current++;
+            var nextCurtain = $(".curtains .curtain:eq("+current+")");
+            nextCurtain.css("display","block");
+            nextCurtain.find(".half-left").addClass("fadeInLeft");
+            nextCurtain.find(".half-right").addClass("fadeInRight");
+            nextCurtain.find(".half-left").removeClass("fadeOutLeft");
+            nextCurtain.find(".half-right").removeClass("fadeOutRight");
+
+            checkButtonStatus(current);
+        }
+
+        function openPreviousCurtain(){
+            var currentCurtain = $(".curtains .curtain:eq("+current+")");
+            current--;
+            var previousCurtain = $(".curtains .curtain:eq("+current+")");
+            currentCurtain.find(".half-left").removeClass("fadeInLeft");
+            currentCurtain.find(".half-right").removeClass("fadeInRight");
+            currentCurtain.find(".half-left").addClass("fadeOutLeft");
+            currentCurtain.find(".half-right").addClass("fadeOutRight");
+            previousCurtain.removeClass("zoomOut");
+            previousCurtain.addClass("zoomIn");
+
+            checkButtonStatus(current);
+        }
+
+        function  checkButtonStatus(offset){
+            if(offset==0){
+                $("#down").hide();
+            }else if(offset == ($(".curtains .curtain").length-1)){
+                $("#up").hide();
+            }else{
+                $("#down").show();
+                $("#up").show();
+            }
+        }
     })(jQuery)
 </script>
 </body>
